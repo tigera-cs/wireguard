@@ -1,11 +1,13 @@
 # Securing Data-in-Transit with Calico & WireGuard - DEMO
 
+### Content of this repo
+
 * [Thank You!](#thank-you)
 * [Overview](#overview)
 * [Before you begin...](#before-you-begin)
 * [Demo](#demo)
 
-### Thank you
+### Thank you!
 
 Thank you for attending the Open Source Summit in Vienna and the presentation on "Securing Data-in-Transit with Calico & WireGuard" by Tigera.
 
@@ -48,14 +50,16 @@ ________________________________________________________________________________
 
 **Required**
 
-- On all nodes in the cluster that you want to participate in Calico encryption, verify that the operating system(s) on the nodes are installed with WireGuard: https://www.wireguard.com/install/.
+- On all nodes in the cluster that you want to participate in Calico encryption, verify that the operating system(s) on the nodes are installed with [WireGuard](https://www.wireguard.com/install/).
 
     **NOTE**
+    ```
     Some node operating systems do not support Wireguard, or do not have it installed by default. Enabling Calico Wireguard encryption does not require all nodes to be installed with Wireguard. However, traffic to or from a node that does not have Wireguard installed will not be encrypted.
+    ```
 
-- IP addresses for every node in the cluster. This is required to establish secure tunnels between the nodes. Calico can automatically do this using IP autodetection methods: https://docs.tigera.io/calico/latest/networking/ipam/ip-autodetection.
+- IP addresses for every node in the cluster. This is required to establish secure tunnels between the nodes. Calico can automatically do this using [IP autodetection methods](https://docs.tigera.io/calico/latest/networking/ipam/ip-autodetection).
 
-For more information about WireGuard in Calico, please visit the full documentation: https://docs.tigera.io/calico/latest/network-policy/encrypt-cluster-pod-traffic
+For more information about WireGuard in Calico, please visit the [full documentation](https://docs.tigera.io/calico/latest/network-policy/encrypt-cluster-pod-traffic).
 ______________________________________________________________________________________________________________________________________________________________________
 
 ### Demo
