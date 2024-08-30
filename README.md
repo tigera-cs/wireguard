@@ -42,6 +42,14 @@ ________________________________________________________________________________
 - Inter-node pod traffic: IPv4 only
 - Inter-node, host-network traffic, IPv4/IPv6: supported only on managed clusters deployed on EKS and AKS
 
+**Supported platforms**
+
+- Kubernetes, on-premises using Calico CNI
+- EKS using Calico CNI
+- EKS using AWS CNI
+- AKS using Calico CNI
+- AKS using Azure CNI
+
 **Unsupported**
 
 - Encrypted same-node pod traffic
@@ -49,6 +57,9 @@ ________________________________________________________________________________
 - Using your own custom keys to encrypt traffic
 
 **Required**
+
+- Calico must be installed in the cluster. Should you need help installing Calico Open Source, please follow the relevant documentation to install Calico in your test environment, from [here](https://docs.tigera.io/calico/latest/getting-started/kubernetes/).
+
 
 - On all nodes in the cluster that you want to participate in Calico encryption, verify that the operating system(s) on the nodes are installed with [WireGuard](https://www.wireguard.com/install/).
 
@@ -68,13 +79,13 @@ WireGuard is included in Linux 5.6+ kernels, and has been backported to earlier 
 
 At this stage, we assume that you have a cluster running, which is compatible with the requirements above.
 
-1. Create the namespace `nc` where `netcat` client and server pods will be deployed:
+**1.** Create the namespace `nc` where `netcat` client and server pods will be deployed:
 
 ```
 kubectl create ns nc
 ```
 
-2. Deploy `busybox` pods as a daemost set, which we'll be using for exchanging messages via `netcat`:
+**2.** Deploy `busybox` pods as a daemost set, which we'll be using for exchanging messages via `netcat`:
 
 ```
 cat << EOF | kubectl apply -f -
@@ -104,7 +115,7 @@ spec:
 EOF
 ```
 
-3. Make sure to have 5 shell tabs for this use:
+**3.** Make sure to have 5 shell tabs for this use:
     - **SHELL-1** `nc` server
     - **SHELL-2** `nc` client
     - **SHELL-3** `tcpdump` on node where `nc server` pod is deployed
@@ -114,7 +125,7 @@ EOF
 You should have something similar to this:
 ![shell-windows](etc/shell_windows.png)
 
-4. **SHELL-5:** Run this command to get name and IP address of `nc` pods:
+**4. SHELL-5:** Run this command to get name and IP address of `nc` pods:
 
 ```
 kubectl get pods -n nc -owide
@@ -136,7 +147,7 @@ In my case:
 - `ip-10-0-1-31.ca-central-1.compute.internal` is `worker2` node
 
 
-5. **SHELL-1:** Exec into the pod that you have identified as `nc server`:
+**5. SHELL-1:** Exec into the pod that you have identified as `nc server`:
 
 ```
 kubectl exec -it -n nc nc-49xqj -- sh
@@ -148,7 +159,7 @@ Then launch the `netcat` server with this command:
 nc -l -p 12345
 ```
 
-6. **SHELL-2:** Exec into the pod that you have identified as `nc client`:
+**6. SHELL-2:** Exec into the pod that you have identified as `nc client`:
 
 ```
 kubectl exec -it -n nc nc-bl648 -- sh
@@ -160,7 +171,7 @@ Then launch the `netcat` client with this command, against the `nc server` IP ad
 nc 10.48.116.142 12345
 ```
 
-7. **SHELL-3:** SSH into the node where `nc server` pod is deployed and launch this command:
+**7. SHELL-3:** SSH into the node where `nc server` pod is deployed and launch this command:
 
 ```
 sudo tcpdump -ni ens5 port 12345 -A -l | grep -i 'hello'
@@ -170,7 +181,7 @@ sudo tcpdump -ni ens5 port 12345 -A -l | grep -i 'hello'
 
 This command captures network traffic on the `ens5` interface for port `12345` using `tcpdump`, displays the packet contents in ASCII format (`-A`), and pipes the output to `grep` to search for lines containing the case-insensitive string `hello`.
 
-8. **SHELL-2:** SSH into the node where `nc client` pod is deployed and launch this command:
+**8. SHELL-2:** SSH into the node where `nc client` pod is deployed and launch this command:
 
 ```
 sudo tcpdump -ni ens5 port 12345 -A -l | grep -i 'hello'
@@ -180,7 +191,9 @@ sudo tcpdump -ni ens5 port 12345 -A -l | grep -i 'hello'
 
 This command captures network traffic on the `ens5` interface for port `12345` using `tcpdump`, displays the packet contents in ASCII format (`-A`), and pipes the output to `grep` to search for lines containing the case-insensitive string `hello`.
 
-9. **SHELL-1 or SHELL-2:** Send some `hello` messages and check shell tabs where `tcpdump` is running. You should get some packets and the result should look similar to this:
+**9. SHELL-1 or SHELL-2:** Send some `hello` messages and check shell tabs where `tcpdump` is running. You can do so, by typying `hello` into the shell, either from the `nc client` or from the `nc server` shell.
+
+You should get some packets in `SHELL-3` and `SHELL-4` and the result should look similar to this:
 
 ```
 ubuntu@ip-10-0-1-30:~$ sudo tcpdump -ni ens5 -A -l port 12345 | grep "hello"
@@ -191,15 +204,15 @@ listening on ens5, link-type EN10MB (Ethernet), capture size 262144 bytes
 .UWoS.5.hello
 ```
 
-10. **SHELL-5:** Enable WireGuard globally on all nodes, with this command:
+**10. SHELL-5:** Enable WireGuard globally on all nodes, with this command:
 
 ```
 kubectl patch felixconfiguration default --type='merge' -p '{"spec":{"wireguardEnabled":true}}'
 ```
 
-11. Wait about 5/10 seconds and do step 9 again. New attempts will be encrypted by WireGuard and you won't be able to see the word `hello` in `tcpdump` anymore.
+**11.** Wait about 5/10 seconds and do step 9 again. New attempts will be encrypted by WireGuard and you won't be able to see the word `hello` in `tcpdump` anymore.
 
-12. **SHELL-3 or SHELL-4:** Exit the `tcpdump` command and verify that new `hello` messages are sent via encrypted packets with WireGaurd default destination port `51820`with this command:
+**12.** **SHELL-3 or SHELL-4:** Exit the `tcpdump` command and verify that new `hello` messages are sent via encrypted packets with WireGaurd default destination port `51820`with this command:
 
 ```
 sudo tcpdump -ni any port 51820
@@ -207,15 +220,15 @@ sudo tcpdump -ni any port 51820
 
 Then, from SHELL-1 or SHELL-2 send some `hello` messages and you should see some packets showing up in tcpdump.
 
-13. Finally, you can verify WireGuard list, by using `wg` tool. To do so, follow these steps:
+**13.** Finally, you can verify WireGuard list, by using `wg` tool. To do so, follow these steps:
 
-a. **SHELL-3 or SHELL-4:** Exit the `tcpdump` command and install WireGuard tools with this command:
+**a.** **SHELL-3 or SHELL-4:** Exit the `tcpdump` command and install WireGuard tools with this command:
 
 ```
 sudo apt install wireguard-tools
 ```
 
-b. Run this command:
+**b.** Run this command:
 
 ```
 sudo wg
