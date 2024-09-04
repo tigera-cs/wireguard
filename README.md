@@ -63,10 +63,8 @@ ________________________________________________________________________________
 
 - On all nodes in the cluster that you want to participate in Calico encryption, verify that the operating system(s) on the nodes are installed with [WireGuard](https://www.wireguard.com/install/).
 
-    ::: **NOTE**
-    
-    Some node operating systems do not support Wireguard, or do not have it installed by default. Enabling Calico Wireguard encryption does not require all nodes to be installed with Wireguard. However, traffic to or from a node that does not have Wireguard installed will not be encrypted.
-    :::
+  > **NOTE:**
+  > Some node operating systems do not support Wireguard, or do not have it installed by default. Enabling Calico Wireguard encryption does not require all nodes to be installed with Wireguard. However, traffic to or from a node that does not have Wireguard installed will not be encrypted.  
 
 - IP addresses for every node in the cluster. This is required to establish secure tunnels between the nodes. Calico can automatically do this using [IP autodetection methods](https://docs.tigera.io/calico/latest/networking/ipam/ip-autodetection).
 
