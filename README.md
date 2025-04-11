@@ -114,11 +114,11 @@ EOF
 ```
 
 **3.** Make sure to have 5 shell tabs for this use:
-    - **SHELL-1** `nc` server
-    - **SHELL-2** `nc` client
-    - **SHELL-3** `tcpdump` on node where `nc server` pod is deployed
-    - **SHELL-4** `tcpdump` on node where `nc client` pod is deployed
-    - **SHELL-5** shell to send commands to the cluster
+  - **SHELL-1** `nc` server
+  - **SHELL-2** `nc` client
+  - **SHELL-3** `tcpdump` on node where `nc server` pod is deployed
+  - **SHELL-4** `tcpdump` on node where `nc client` pod is deployed
+  - **SHELL-5** shell to send commands to the cluster
 
 You should have something similar to this:
 ![shell-windows](etc/shell_windows.png)
@@ -179,7 +179,7 @@ sudo tcpdump -ni ens5 port 12345 -A -l | grep -i 'hello'
 
 This command captures network traffic on the `ens5` interface for port `12345` using `tcpdump`, displays the packet contents in ASCII format (`-A`), and pipes the output to `grep` to search for lines containing the case-insensitive string `hello`.
 
-**8. SHELL-2:** SSH into the node where `nc client` pod is deployed and launch this command:
+**8. SHELL-4:** SSH into the node where `nc client` pod is deployed and launch this command:
 
 ```
 sudo tcpdump -ni ens5 port 12345 -A -l | grep -i 'hello'
