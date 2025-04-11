@@ -189,7 +189,7 @@ sudo tcpdump -ni ens5 port 12345 -A -l | grep -i 'hello'
 
 This command captures network traffic on the `ens5` interface for port `12345` using `tcpdump`, displays the packet contents in ASCII format (`-A`), and pipes the output to `grep` to search for lines containing the case-insensitive string `hello`.
 
-**9. SHELL-1 or SHELL-2:** Send some `hello` messages and check shell tabs where `tcpdump` is running. You can do so, by typying `hello` into the shell, either from the `nc client` or from the `nc server` shell.
+**9. SHELL-1 or SHELL-2:** Send some `hello` messages and check shell tabs where `tcpdump` is running. You can do so, by typing `hello` into the shell, either from the `nc client` or from the `nc server` shell.
 
 You should get some packets in `SHELL-3` and `SHELL-4` and the result should look similar to this:
 
